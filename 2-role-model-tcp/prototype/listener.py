@@ -3,7 +3,6 @@
 
 import sys
 import socket
-import select
 
 from prompt_toolkit.input.vt100 import raw_mode
 from utils import SelectableJointPool 
@@ -25,10 +24,16 @@ class Shell:
         pool.join(sock.fileno(), sys.stdout.fileno())
 
         while True:
-            pool.run()
+            try:
+                pool.run()
+            except:
+                print("shutdown")
+                break
+            finally:
+                if sock:
+                    sock.close()
 
         # close the socket
-        sock.close()
 
 if __name__ == "__main__":
     host = sys.argv[1]
